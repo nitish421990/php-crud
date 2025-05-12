@@ -24,11 +24,11 @@ $db="php-crud";
 
 $connect =new mysqli($localhost,$username,$password,$db);
 
-if($connect){
-    echo "successfully connected";
-}else{
-    echo "not connected";
-}
+// if($connect){
+//     echo "successfully connected";
+// }else{
+//     echo "not connected";
+// }
 
 
 ?>
