@@ -15,20 +15,17 @@ CREATE TABLE `users` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 );
-*/ 
+*/
 
-$localhost="localhost";
-$username="root";
-$password="";
-$db="php-crud";
+$localhost = "localhost";
+$username = "root";
+$password = "";
+$db = "php-crud";
 
-$connect =new mysqli($localhost,$username,$password,$db);
+$connect = new mysqli($localhost, $username, $password, $db);
 
 // if($connect){
 //     echo "successfully connected";
 // }else{
 //     echo "not connected";
 // }
-
-
-?>
