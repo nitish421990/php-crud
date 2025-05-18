@@ -42,7 +42,7 @@
     </table>
   </div>
   <!-- Modal -->
-  <div class="modal fade" id="userModal" role="dialog" tabindex="-1">
+  <div class="modal fade" id="userModal" role="dialog" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
 
       <!-- Modal content-->
@@ -50,10 +50,11 @@
         <form id="userForm">
           <div class="modal-header">
 
-            <h5 class="modal-title">Add User</h5>
+            <h5 class="modal-title" id="modalTitle">Add User</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
+            <input type="hidden" id="userId" name="id">
             <div class="mb-3">
               <label>Name</label>
               <input type="text" id="name" name="name" class="form-control" required>

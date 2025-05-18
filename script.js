@@ -12,32 +12,62 @@ $(document).ready(function () {
     if (name == "" || email == "" || mobile == "" || city == "") {
       console.log("all fields are required");
       Swal.fire({
-        icon:"warning",
-        title:"validation Error",
-        text:"All Fields are Required"
+        icon: "warning",
+        title: "validation Error",
+        text: "All Fields are Required",
       });
       return;
     }
 
     let formData = $(this).serialize();
+    let action = $("#userId").val() == "" ? "insert" : "update";
+    console.log(action);
 
     $.ajax({
       url: "crud.php",
       type: "POST",
-      data: formData,
+      data: formData + "&action=" + action,
       success: function (responce) {
-        console.log("Data successfully inserted");
-        Swal.fire({
-          icon:"success",
-          title:"Success!",
-          text:"responce",
-          timer:1500,
-          showConfirmButton:false,
-        });
-        $("#userForm")[0].reset();
-        $("#userModal").modal("hide");
+        console.log(responce);
+        if (responce) {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: responce,
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          $("#userForm")[0].reset();
+          $("#userModal").modal("hide");
+          loadUsers();
+        } else {
+          console.log(responce);
+        }
       },
     });
+  });
+});
+
+$(document).on("click", ".editBtn", function () {
+  let id = $(this).data("id");
+  $.ajax({
+    url: "crud.php",
+    type: "get",
+    data: { editId: id },
+    success: function (data) {
+      let user = JSON.parse(data);
+      $("#userId").val(user.id);
+      $("#name").val(user.name);
+      $("#email").val(user.email);
+      $("#mobile").val(user.mobile);
+      $("#city").val(user.city);
+      $("#modalTitle").text("Edit User");
+      $("#saveBtn").text("Update");
+
+      var userModal = new bootstrap.Modal(document.getElementById("userModal"));
+
+      userModal.show();
+    },
   });
 });
 
@@ -57,7 +87,11 @@ function loadUsers(query = "") {
                       <td>${user.email}</td>
                       <td>${user.mobile}</td>
                       <td>${user.city}</td>
-                      <td> <button>Edit</button> <button>delete</button></td>
+                      <td> 
+                      <button class="btn btn-primary btn-sm editBtn" data-id="${
+                        user.id
+                      }">Edit</button> 
+                      <button>delete</button></td>
                       
                     </tr>
                 `;
@@ -67,4 +101,10 @@ function loadUsers(query = "") {
   });
 }
 
-function openAddModal() {}
+function openAddModal() {
+  $("#userForm")[0].reset();
+  $("#userId").val("");
+  $("#modalTitle").text("Add User");
+  $("#saveBtn").text("Save");
+
+}
