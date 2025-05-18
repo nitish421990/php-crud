@@ -1,7 +1,12 @@
 <?php
 include "db.php";
 
-$sql = "select * from users";
+$query=isset($_GET['query']) ? $connect->real_escape_string($_GET['query']) : "";
+$where ='';
+if(!empty($query)){
+    $where ="where name like '%$query%' OR email like '%$query%' OR mobile like '%$query%' OR city like '%$query%' " ;
+}
+$sql = "select * from users  $where";
 $result = $connect->query($sql);
 $users = [];
 

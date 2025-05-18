@@ -71,6 +71,37 @@ $(document).on("click", ".editBtn", function () {
   });
 });
 
+$(document).on("click", ".deleteBtn", function(){
+ let id= $(this).data("id");
+ Swal.fire({
+  title:"Are Your Sure",
+  text:"You Won't be able to revert this!",
+  icon:"warning",
+  showCancelButton:true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes Delete it!",
+ }).then((result)=>{
+  if(result.isConfirmed){
+    $.ajax({
+      url:"crud.php",
+      type: "POST",
+      data: { deleteId: id },
+      success:function(responce){
+        swal.fire("Deleted",responce,"success");
+        loadUsers();
+      }
+    })
+  }
+ })
+});
+
+$("#search").on("keyup", function(){
+  let query= $(this).val();
+  console.log(query);
+  loadUsers(query);
+
+});
 function loadUsers(query = "") {
   $.ajax({
     url: "fetch_users.php",
@@ -88,10 +119,8 @@ function loadUsers(query = "") {
                       <td>${user.mobile}</td>
                       <td>${user.city}</td>
                       <td> 
-                      <button class="btn btn-primary btn-sm editBtn" data-id="${
-                        user.id
-                      }">Edit</button> 
-                      <button>delete</button></td>
+                      <button class="btn btn-primary btn-sm editBtn" data-id="${user.id}">Edit</button> 
+                      <button class="btn btn-danger btn-sm deleteBtn" data-id="${user.id}" >Delete</button></td>
                       
                     </tr>
                 `;
@@ -106,5 +135,4 @@ function openAddModal() {
   $("#userId").val("");
   $("#modalTitle").text("Add User");
   $("#saveBtn").text("Save");
-
 }

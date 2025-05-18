@@ -19,7 +19,7 @@
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userModal" onclick="openAddModal()">Add User</button>
       </div>
       <div class="col-md-6">
-        search..
+        <input type="text" id="search" class="form-control" placeholder="Search....">
       </div>
 
     </div>
