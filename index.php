@@ -40,6 +40,12 @@
 
       </tbody>
     </table>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div id="recordInfo" class="text-muted small"></div>
+      <nav>
+        <ul class="pagination justify-content-end mb-0" id="pagination"></ul>
+      </nav>
+    </div>
   </div>
   <!-- Modal -->
   <div class="modal fade" id="userModal" role="dialog" tabindex="-1" aria-hidden="true">

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  loadUsers();
+  loadUsers(currentPage, currentQuery);
 
   $("#userForm").submit(function (e) {
     e.preventDefault();
@@ -39,7 +39,7 @@ $(document).ready(function () {
           });
           $("#userForm")[0].reset();
           $("#userModal").modal("hide");
-          loadUsers();
+          loadUsers(currentPage, currentQuery);
         } else {
           console.log(responce);
         }
@@ -71,62 +71,105 @@ $(document).on("click", ".editBtn", function () {
   });
 });
 
-$(document).on("click", ".deleteBtn", function(){
- let id= $(this).data("id");
- Swal.fire({
-  title:"Are Your Sure",
-  text:"You Won't be able to revert this!",
-  icon:"warning",
-  showCancelButton:true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Yes Delete it!",
- }).then((result)=>{
-  if(result.isConfirmed){
-    $.ajax({
-      url:"crud.php",
-      type: "POST",
-      data: { deleteId: id },
-      success:function(responce){
-        swal.fire("Deleted",responce,"success");
-        loadUsers();
-      }
-    })
-  }
- })
+$(document).on("click", ".deleteBtn", function () {
+  let id = $(this).data("id");
+  Swal.fire({
+    title: "Are Your Sure",
+    text: "You Won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes Delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: "crud.php",
+        type: "POST",
+        data: { deleteId: id },
+        success: function (responce) {
+          swal.fire("Deleted", responce, "success");
+          loadUsers(currentPage, currentQuery);
+        },
+      });
+    }
+  });
 });
 
-$("#search").on("keyup", function(){
-  let query= $(this).val();
-  console.log(query);
-  loadUsers(query);
-
+$("#search").on("keyup", function () {
+  let query = $(this).val();
+  // console.log(query);
+  loadUsers(1, currentQuery);
 });
-function loadUsers(query = "") {
+
+let currentPage = 1;
+let currentQuery = "";
+
+function loadUsers(page = 1, query = "") {
+  currentPage = page;
+  currentQuery = query;
+
   $.ajax({
     url: "fetch_users.php",
     type: "GET",
-    data: { query: query },
-    success: function (responce) {
-      const data = JSON.parse(responce);
-      let rows = "";
-      data.users.forEach((user, index) => {
-        rows += `
-                    <tr>
-                      <td>${index + 1}</td>
-                      <td>${user.name}</td>
-                      <td>${user.email}</td>
-                      <td>${user.mobile}</td>
-                      <td>${user.city}</td>
-                      <td> 
-                      <button class="btn btn-primary btn-sm editBtn" data-id="${user.id}">Edit</button> 
-                      <button class="btn btn-danger btn-sm deleteBtn" data-id="${user.id}" >Delete</button></td>
-                      
-                    </tr>
-                `;
-        $("#userTable").html(rows);
-      });
+    data: { page: page, query: query },
+    success: function(response) {
+        const data = JSON.parse(response);
+        let rows = '';
+        let i=1;
+        data.users.forEach((user, index) => {
+            let serialNumber = (data.currentPage - 1) * data.perPage + index + 1;
+            rows += `
+                <tr>
+                    <td>${serialNumber}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.mobile}</td>
+                    <td>${user.city}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm editBtn" data-id="${user.id}">Edit</button>
+                        <button class="btn btn-danger btn-sm deleteBtn" data-id="${user.id}">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+        $('#userTable').html(rows);
+    
+        // 📌 Update record info
+        let start = (data.currentPage - 1) * data.perPage + 1;
+        let end = start + data.users.length - 1;
+        $('#recordInfo').text(`Showing ${start} to ${end} of ${data.totalRecords} records`);
+    
+        // 🧭 Pagination links (unchanged)
+        let paginationHTML = '';
+        if (page > 1) {
+            paginationHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="loadUsers(${page - 1}, '${query}')">Previous</a>
+                </li>`;
+        } else {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">Previous</span></li>`;
+        }
+    
+        for (let i = 1; i <= data.totalPages; i++) {
+            paginationHTML += `
+                <li class="page-item ${i === page ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="loadUsers(${i}, '${query}')">${i}</a>
+                </li>`;
+        }
+    
+        if (page < data.totalPages) {
+            paginationHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="loadUsers(${page + 1}, '${query}')">Next</a>
+                </li>`;
+        } else {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">Next</span></li>`;
+        }
+    
+        $('#pagination').html(paginationHTML);
     },
+    
   });
 }
 
